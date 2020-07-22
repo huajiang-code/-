@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+
+
+    <div id="container">
+        <section>
+            <div class="pullBox">
+                <div class="black">
+
+                </div>
+                <div class="content">
+                    开始游戏
+                </div>
+            </div>
+
+        </section>
+        <div class="stop">
+            游戏结束
+        </div>
+        <div class="grade">
+            100分
+        </div>
+        <div class="reStar">
+            重新开始
+        </div>
+        <div class="set">
+            <div class="top">
+                <span>速度：</span><input type="text" placeholder="请输入挑战难度默认10">
+            </div>
+            <div class="bottom">
+                <span>个数：</span><input type="text" placeholder="请输入挑战难度默认随机">
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <script src="./jquery1.7.js"></script>
+    <script>
+        $(function () {
+
+            var width = $(window).width();
+            var height = $(window).height();
+            var str = "abcdefghijklmnopqrstuvwxyz";
+            var sum = 0;
+            var speed = 15;
+            var geshu = 2;
+            var grade = 100;
+
+            // var minX=$("section").offset().left;
+            var maxX = $("section").innerWidth();
+            console.log(width);
+            console.log(height);
+            $("#container").css({
+                width: width,
+                height: height,
+
+
+            })
+            $(".top input").blur(function () {
+                var content=$(".top input").val();
+                alert("待完成");
+            })
+            $(".bottom input").blur(function () {
+                alert("待完成");
+            })
+
+
+            $(document).ready(function () {
+                $(".pullBox").animate({
+                    "top": 0
+                }, 1000);
+            })
+            function rand(min, max) {
+                var num = Math.floor(Math.random() * (min - max - 1) + max + 1);
+                return num;
+            };
+            function randLetter() {  //随机的字母
+                var str = "abcdefghijklmnopqrstuvwxyz";
+                var num = rand(0, 25);
+                var letter = str[num];
+                return letter;
+            }
+            function randX() {       //字母随机出现的X值
+                var x = rand(0, maxX - 50);
+                return x;
+            }
+            function randNum() {     //一次随机出现的字母个数
+                var num = rand(1, 5);
+                return num;
+            }
+
+            function createImg() {
+                var letter = randLetter();
+                $("<div class='freedom' title='" + letter + "'></div>").appendTo("section").css({
+                    "position": "absolute",
+                    "top": 0,
+                    "left": randX(),
+                    "height": 50,
+                    "width": 50,
+                }).append($("<img src='./imgs/" + letter + ".png' alt='' class='img'>").css({
+                    "height": 50,
+                    "width": 50,
+                    "opacity": 0.7,
+                }));
+                sum++;
+                console.log(sum);
+
+            }
+            var time1;
+            var time2;
+            function hanshu() {
+
+                clearInterval(time1);
+                time1 = setInterval(function () {
+                    for (var i = 0; i < sum; i++) {
+                        var top = $(".freedom").eq(i).offset().top;
+                        $(".freedom").eq(i).css({
+                            "top": top + speed,
+                        })
+
+                        if (top > 480) {
+                            $(".freedom").eq(i).remove();
+                            sum--;
+                            grade -= 10;
+                            $(".grade").text(grade + "分");
+                            if (grade < 90) {
+                                clearInterval(time1);
+                                clearInterval(time2);
+
+                                $(".stop").show(1000);
+
+                            }
+                        }
+
+                        $(document).keydown(function (e) {
+                            var index = e.which;
+                            var zimu = str[index - 65];
+
+                            for (var j = 0; j < sum; j++) {
+                                if ($(".freedom").eq(j).attr("title") == zimu) {
+                                    $(".freedom").eq(j).remove();
+                                    sum--;
+
+                                }
+                            }
+
+                        })
+
+
+                    }
+                }, 200)
+
+
+
+
+
+
+
+            }
+
+
+            $(".content").click(function () {
+                $(".pullBox").animate({
+                    "top": -500
+                }, 500);
+
+                setTimeout(function () {
+
+                    time2 = setInterval(function () {
+                        for (var i = 1; i < randNum(); i++) {
+                            createImg();
+                        }
+
+                        hanshu();
+                    }, 1000)
+
+
+                }, 500)
+
+
+
+            })
+
+            $(".reStar").click(function () {
+                window.location.reload();
+            })
+
+
+
+
+
+
+
+        })
+    </script>
+</body>
+
+</html>
